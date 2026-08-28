@@ -1,0 +1,570 @@
+<title>FrameForge</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #0B0F15;
+  --bg-elevated: #151A22;
+  --text: #E5E1DA;
+  --text-secondary: #848A94;
+  --accent: #E8572A;
+  --accent-hover: #F06B40;
+  --accent-subtle: rgba(232, 87, 42, 0.1);
+  --border: #252A33;
+  --grid-line: rgba(232, 87, 42, 0.035);
+  --glow: rgba(232, 87, 42, 0.07);
+  --input-bg: #111620;
+  --nav-bg: rgba(11, 15, 21, 0.88);
+  --shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #EDEAE5;
+    --bg-elevated: #FFFFFF;
+    --text: #1A1D23;
+    --text-secondary: #5C6270;
+    --accent: #D94E1F;
+    --accent-hover: #B8411A;
+    --accent-subtle: rgba(217, 78, 31, 0.07);
+    --border: #D0CBC3;
+    --grid-line: rgba(217, 78, 31, 0.045);
+    --glow: rgba(217, 78, 31, 0.06);
+    --input-bg: #FFFFFF;
+    --nav-bg: rgba(237, 234, 229, 0.88);
+    --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+}
+
+:root[data-theme="light"] {
+  --bg: #EDEAE5;
+  --bg-elevated: #FFFFFF;
+  --text: #1A1D23;
+  --text-secondary: #5C6270;
+  --accent: #D94E1F;
+  --accent-hover: #B8411A;
+  --accent-subtle: rgba(217, 78, 31, 0.07);
+  --border: #D0CBC3;
+  --grid-line: rgba(217, 78, 31, 0.045);
+  --glow: rgba(217, 78, 31, 0.06);
+  --input-bg: #FFFFFF;
+  --nav-bg: rgba(237, 234, 229, 0.88);
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+body {
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,h2,h3 {
+  font-family: 'Syne', system-ui, sans-serif;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 32px);
+}
+
+/* ── Nav ── */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--nav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.logo {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.logo-accent { color: var(--accent); }
+
+.nav-cta {
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  transition: background 0.2s;
+}
+.nav-cta:hover { background: var(--accent-hover); }
+.nav-cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 100px 0 80px;
+  overflow: hidden;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 35%, var(--glow) 0%, transparent 55%),
+    repeating-linear-gradient(90deg, var(--grid-line) 0 1px, transparent 1px 72px),
+    repeating-linear-gradient(0deg, var(--grid-line) 0 1px, transparent 1px 72px);
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  text-align: center;
+  max-width: 740px;
+  margin: 0 auto;
+  animation: fadeUp 0.7s ease-out both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-content { animation: none; }
+}
+
+.hero-title {
+  font-size: clamp(2.75rem, 7vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  margin: 0 0 24px;
+}
+
+.hero-title .accent {
+  background: linear-gradient(135deg, var(--accent), #F4945E);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  color: var(--text-secondary);
+  max-width: 560px;
+  margin: 0 auto 40px;
+  line-height: 1.65;
+}
+
+.btn {
+  display: inline-block;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 14px 32px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn:active { transform: scale(0.97); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--accent-hover); }
+
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-outline:hover { border-color: var(--text-secondary); }
+
+/* ── Section shared ── */
+.section-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin: 0 0 clamp(40px, 6vw, 64px);
+}
+
+/* ── Features ── */
+.features {
+  padding: clamp(80px, 12vw, 140px) 0;
+  border-top: 1px solid var(--border);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+@media (max-width: 720px) {
+  .features-grid { grid-template-columns: 1fr; gap: 40px; }
+}
+
+.feature-card {
+  padding: 32px 28px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.feature-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: var(--accent);
+}
+
+.feature-card h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+}
+
+.feature-card p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Process ── */
+.process {
+  padding: clamp(80px, 12vw, 140px) 0;
+  border-top: 1px solid var(--border);
+}
+
+.process-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+  counter-reset: step;
+}
+
+@media (max-width: 720px) {
+  .process-steps { grid-template-columns: 1fr; gap: 36px; }
+}
+
+.step { counter-increment: step; }
+
+.step-num {
+  display: block;
+  font-family: 'Syne', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 2.5rem;
+  letter-spacing: -0.04em;
+  color: var(--accent);
+  opacity: 0.35;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+
+.step h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
+}
+
+.step p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Waitlist ── */
+.waitlist {
+  padding: clamp(80px, 12vw, 140px) 0;
+  border-top: 1px solid var(--border);
+}
+
+.waitlist-inner {
+  max-width: 520px;
+}
+
+.waitlist h2 {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin: 0 0 16px;
+}
+
+.waitlist > .container > p,
+.waitlist-inner > p {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  margin: 0 0 32px;
+  line-height: 1.6;
+}
+
+.waitlist-form {
+  display: flex;
+  gap: 10px;
+}
+
+@media (max-width: 520px) {
+  .waitlist-form { flex-direction: column; }
+}
+
+.waitlist-form input[type="email"] {
+  flex: 1;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 1rem;
+  padding: 14px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.waitlist-form input[type="email"]::placeholder { color: var(--text-secondary); }
+.waitlist-form input[type="email"]:focus { border-color: var(--accent); }
+
+.waitlist-form .btn {
+  white-space: nowrap;
+}
+
+.waitlist-success {
+  margin-top: 20px;
+}
+
+.waitlist-success p {
+  font-size: 1rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.waitlist-note {
+  margin-top: 12px;
+  font-size: 0.825rem;
+  color: var(--text-secondary);
+}
+
+/* ── Footer ── */
+.footer {
+  padding: 40px 0;
+  border-top: 1px solid var(--border);
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer-logo {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.footer-copy {
+  font-size: 0.825rem;
+  color: var(--text-secondary);
+}
+
+/* ── Utilities ── */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+}
+</style>
+
+<nav class="nav" role="navigation">
+  <div class="container nav-inner">
+    <a href="#" class="logo">Frame<span class="logo-accent">Forge</span></a>
+    <a href="#waitlist" class="nav-cta">Get Early Access</a>
+  </div>
+</nav>
+
+<main>
+  <section class="hero">
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="container hero-content">
+      <h1 class="hero-title">Video production,<br><span class="accent">forged by AI.</span></h1>
+      <p class="hero-sub">From concept to final cut in minutes. FrameForge automates every step of video creation so you can ship content at the speed of thought.</p>
+      <a href="#waitlist" class="btn btn-primary">Join the Waitlist</a>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-label">Capabilities</div>
+      <h2 class="section-title">Every step, handled.</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12,7 27,16 12,25" fill="none"/>
+              <circle cx="7" cy="6" r="1.5" fill="currentColor" stroke="none"/>
+              <circle cx="4" cy="11" r="1" fill="currentColor" stroke="none"/>
+            </svg>
+          </div>
+          <h3>AI Video Generation</h3>
+          <p>Generate videos from text, images, or raw concepts. Describe what you want and FrameForge builds the visuals, transitions, and audio.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="11" x2="27" y2="11"/>
+              <circle cx="20" cy="11" r="3" fill="none"/>
+              <line x1="5" y1="21" x2="27" y2="21"/>
+              <circle cx="12" cy="21" r="3" fill="none"/>
+            </svg>
+          </div>
+          <h3>Intelligent Editing</h3>
+          <p>Auto-cut, color grade, caption, and score. The AI editor handles the technical work with broadcast-ready results every time.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="10" width="10" height="7" rx="1"/>
+              <rect x="18" y="8" width="10" height="16" rx="1"/>
+              <rect x="4" y="20" width="10" height="4" rx="1"/>
+            </svg>
+          </div>
+          <h3>Multi-Platform Export</h3>
+          <p>One render, every platform. Automatically resize, re-caption, and format for YouTube, TikTok, Instagram, and LinkedIn.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="process">
+    <div class="container">
+      <div class="section-label">How it works</div>
+      <h2 class="section-title">Three steps to finished video.</h2>
+      <div class="process-steps">
+        <div class="step">
+          <span class="step-num">01</span>
+          <h3>Brief</h3>
+          <p>Describe your video in plain language. Set the tone, length, target audience, and visual style.</p>
+        </div>
+        <div class="step">
+          <span class="step-num">02</span>
+          <h3>Generate</h3>
+          <p>FrameForge's AI assembles your video end to end — visuals, voiceover, captions, music, and effects.</p>
+        </div>
+        <div class="step">
+          <span class="step-num">03</span>
+          <h3>Ship</h3>
+          <p>Review the result, make any tweaks, and publish to all your channels with a single click.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="waitlist" id="waitlist">
+    <div class="container">
+      <div class="waitlist-inner">
+        <h2>Be first in line.</h2>
+        <p>FrameForge launches this fall. Join the waitlist for early access and founding member pricing.</p>
+        <form id="waitlist-form" class="waitlist-form">
+          <label for="waitlist-email" class="visually-hidden">Email address</label>
+          <input type="email" id="waitlist-email" placeholder="you@example.com" required autocomplete="email">
+          <button type="submit" class="btn btn-primary">Get Early Access</button>
+        </form>
+        <div id="waitlist-success" class="waitlist-success" hidden>
+          <p>You're on the list. We'll be in touch soon.</p>
+        </div>
+        <p class="waitlist-note" id="waitlist-note">No spam. Unsubscribe anytime.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <span class="footer-logo">Frame<span class="logo-accent">Forge</span></span>
+    <span class="footer-copy">&copy; 2026 FrameForge. All rights reserved.</span>
+  </div>
+</footer>
+
+<script>
+(function() {
+  var form = document.getElementById('waitlist-form');
+  var success = document.getElementById('waitlist-success');
+  var note = document.getElementById('waitlist-note');
+  var signed = false;
+  try { signed = !!localStorage.getItem('frameforge-waitlist'); } catch(e) {}
+
+  if (signed) {
+    form.hidden = true;
+    success.hidden = false;
+    note.hidden = true;
+  }
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var email = document.getElementById('waitlist-email').value;
+    if (!email) return;
+
+    try { localStorage.setItem('frameforge-waitlist', email); } catch(e) {}
+
+    form.hidden = true;
+    success.hidden = false;
+    note.hidden = true;
+  });
+
+  document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+})();
+</script>
