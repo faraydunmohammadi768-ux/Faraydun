@@ -376,6 +376,22 @@ a { color: inherit; text-decoration: none; }
   font-weight: 500;
 }
 
+.waitlist-error {
+  margin-top: 12px;
+  font-size: 0.875rem;
+  color: #E04040;
+  min-height: 1.4em;
+}
+
+.waitlist-form input[type="email"].input-error {
+  border-color: #E04040;
+}
+
+.waitlist-form .btn[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .waitlist-note {
   margin-top: 12px;
   font-size: 0.825rem;
@@ -510,11 +526,13 @@ a { color: inherit; text-decoration: none; }
       <div class="waitlist-inner">
         <h2>Be first in line.</h2>
         <p>FrameForge launches this fall. Join the waitlist for early access and founding member pricing.</p>
-        <form id="waitlist-form" class="waitlist-form">
+        <form id="waitlist-form" class="waitlist-form"
+              data-endpoint="YOUR_APPS_SCRIPT_URL_HERE">
           <label for="waitlist-email" class="visually-hidden">Email address</label>
           <input type="email" id="waitlist-email" placeholder="you@example.com" required autocomplete="email">
-          <button type="submit" class="btn btn-primary">Get Early Access</button>
+          <button type="submit" id="waitlist-btn" class="btn btn-primary">Get Early Access</button>
         </form>
+        <div id="waitlist-error" class="waitlist-error" role="alert"></div>
         <div id="waitlist-success" class="waitlist-success" hidden>
           <p>You're on the list. We'll be in touch soon.</p>
         </div>
@@ -534,27 +552,106 @@ a { color: inherit; text-decoration: none; }
 <script>
 (function() {
   var form = document.getElementById('waitlist-form');
+  var emailInput = document.getElementById('waitlist-email');
+  var btn = document.getElementById('waitlist-btn');
+  var errorEl = document.getElementById('waitlist-error');
   var success = document.getElementById('waitlist-success');
   var note = document.getElementById('waitlist-note');
-  var signed = false;
-  try { signed = !!localStorage.getItem('frameforge-waitlist'); } catch(e) {}
+  var endpoint = form.getAttribute('data-endpoint') || '';
+  var btnLabel = btn.textContent;
+  var submitting = false;
 
-  if (signed) {
+  var alreadySigned = false;
+  try { alreadySigned = !!localStorage.getItem('frameforge-waitlist'); } catch(e) {}
+
+  if (alreadySigned) {
     form.hidden = true;
     success.hidden = false;
     note.hidden = true;
   }
 
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    var email = document.getElementById('waitlist-email').value;
-    if (!email) return;
+  function isValidEmail(email) {
+    if (!email || email.length > 254) return false;
+    var re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    return re.test(email);
+  }
 
-    try { localStorage.setItem('frameforge-waitlist', email); } catch(e) {}
+  function showError(msg) {
+    errorEl.textContent = msg;
+    emailInput.classList.add('input-error');
+  }
 
+  function clearError() {
+    errorEl.textContent = '';
+    emailInput.classList.remove('input-error');
+  }
+
+  function setLoading(loading) {
+    submitting = loading;
+    btn.disabled = loading;
+    btn.textContent = loading ? 'Submitting…' : btnLabel;
+  }
+
+  function showSuccess() {
     form.hidden = true;
+    errorEl.hidden = true;
     success.hidden = false;
     note.hidden = true;
+    try { localStorage.setItem('frameforge-waitlist', emailInput.value); } catch(e) {}
+  }
+
+  emailInput.addEventListener('input', function() {
+    if (errorEl.textContent) clearError();
+  });
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (submitting) return;
+
+    clearError();
+    var email = emailInput.value.trim();
+
+    if (!email) {
+      showError('Please enter your email address.');
+      emailInput.focus();
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      showError('Please enter a valid email address.');
+      emailInput.focus();
+      return;
+    }
+
+    if (!endpoint || endpoint === 'YOUR_APPS_SCRIPT_URL_HERE') {
+      showSuccess();
+      return;
+    }
+
+    setLoading(true);
+
+    fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ email: email })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      setLoading(false);
+      if (data.statusCode === 409) {
+        showError('This email is already on the waitlist.');
+        return;
+      }
+      if (data.statusCode && data.statusCode !== 200) {
+        showError(data.error || 'Something went wrong. Please try again.');
+        return;
+      }
+      showSuccess();
+    })
+    .catch(function() {
+      setLoading(false);
+      showError('Network error. Please check your connection and try again.');
+    });
   });
 
   document.querySelectorAll('a[href^="#"]').forEach(function(link) {
